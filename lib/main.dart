@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:simple_survey_client/views/questions.dart';
-import 'package:simple_survey_client/survey_client.dart'; // Import your SurveyClient class
+import 'package:get/get.dart'; // Import GetX
+import 'package:simple_survey_client/controllers/main_controller.dart'; // Import the controller
+import 'package:simple_survey_client/services/survey_client.dart';
 
 void main() {
+  Get.put<SurveyClient>(SurveyClient('https://13tracso.pythonanywhere.com'));
   runApp(const MyApp());
 }
 
@@ -11,18 +13,64 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Create an instance of SurveyClient with the base URL for your API
-    final surveyClient = SurveyClient('http://localhost:8000');
-
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Simple Survey',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
-      home: SurveyWidget(
-        surveyClient: surveyClient,
-      ), // Pass your SurveyClient instance here
+      home: MainScreen(),
+    );
+  }
+}
+
+class MainScreen extends GetView<MainController> {
+  MainScreen({super.key}) {
+    Get.put(MainController());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          Obx(
+            () => Center(
+              child: controller.widgetOptions[controller.selectedIndex.value],
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Obx(
+            () => BottomNavigationBar(
+              backgroundColor: Colors.transparent,
+              type: BottomNavigationBarType.fixed,
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.question_answer),
+                  label: 'Survey Form',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.list_alt),
+                  label: 'Responses',
+                ),
+              ],
+              currentIndex: controller.selectedIndex.value,
+              selectedItemColor: Colors.deepPurple,
+              onTap: controller.changeTabIndex,
+              elevation: 0,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
