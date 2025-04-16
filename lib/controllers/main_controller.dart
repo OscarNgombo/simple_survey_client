@@ -5,10 +5,8 @@ import 'package:simple_survey_client/views/questions.dart';
 import 'package:simple_survey_client/views/response.dart';
 
 class MainController extends GetxController {
-  final SurveyClient surveyClient = Get.find<SurveyClient>();
-
   var selectedIndex = 0.obs;
-
+  final SurveyClient surveyClient = Get.find<SurveyClient>();
   late final List<Widget> widgetOptions;
 
   @override

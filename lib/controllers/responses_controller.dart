@@ -4,24 +4,30 @@ import 'package:simple_survey_client/models/survey_response.dart';
 import 'package:simple_survey_client/services/survey_client.dart';
 
 class ResponsesController extends GetxController {
-  final SurveyClient surveyClient = Get.find<SurveyClient>();
-
-  var responses = <SurveyResponse>[].obs;
-  var isLoading = false.obs;
-  var error = RxnString();
-
+  var activeFilter = RxnString();
   // Pagination State
   var currentPage = 1.obs;
-  var lastPage = 1.obs;
-  var totalCount = 0.obs;
-  final int _pageSize = 10;
 
+  var error = RxnString();
   // Filter State
   final filterController = TextEditingController();
-  var activeFilter = RxnString();
 
+  var isLoading = false.obs;
+  var lastPage = 1.obs;
+  var responses = <SurveyResponse>[].obs;
   // Scroll Controller (optional, keep if needed for specific scroll logic)
   final scrollController = ScrollController();
+
+  final SurveyClient surveyClient = Get.find<SurveyClient>();
+  var totalCount = 0.obs;
+
+  final int _pageSize = 10;
+
+  @override
+  void onClose() {
+    filterController.dispose();
+    super.onClose();
+  }
 
   @override
   void onInit() {
@@ -34,13 +40,8 @@ class ResponsesController extends GetxController {
     });
   }
 
-  @override
-  void onClose() {
-    filterController.dispose();
-    super.onClose();
-  }
-
   bool get canGoPrev => currentPage.value > 1;
+
   bool get canGoNext => currentPage.value < lastPage.value;
 
   Future<void> fetchResponses({required int page, bool reset = false}) async {
@@ -80,10 +81,18 @@ class ResponsesController extends GetxController {
 
   void applyFilter() {
     final newFilter = filterController.text.trim();
-    if (activeFilter.value != (newFilter.isEmpty ? null : newFilter)) {
-      activeFilter(newFilter.isEmpty ? null : newFilter);
-      fetchResponses(page: 1, reset: true);
+    if (newFilter.isEmpty) {
+      clearFilter();
+      return;
     }
+
+    activeFilter.value = newFilter;
+    final filteredResponses =
+        responses.where((response) {
+          return response.email?.contains(newFilter) ?? false;
+        }).toList();
+
+    responses.assignAll(filteredResponses);
   }
 
   void clearFilter() {

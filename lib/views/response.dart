@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simple_survey_client/controllers/responses_controller.dart';
 
-// Change to GetView<ResponsesController>
 class ResponsesView extends GetView<ResponsesController> {
-  // Remove the constructor parameter for surveyClient
   const ResponsesView({super.key});
 
   @override

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart'; // Import GetX
-import 'package:simple_survey_client/controllers/main_controller.dart'; // Import the controller
+import 'package:get/get.dart';
+import 'package:simple_survey_client/controllers/main_controller.dart';
 import 'package:simple_survey_client/services/survey_client.dart';
 
 void main() {
